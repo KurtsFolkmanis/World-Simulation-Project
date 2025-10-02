@@ -53,8 +53,10 @@ class Screen() {
 
             switch (choice) {
                 case 1:
+                    Console.Clear();
                     continue;
                 case 2:
+                    Console.Clear();
                     continue;
                 case 3:
                     return;
