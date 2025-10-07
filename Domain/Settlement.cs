@@ -7,6 +7,7 @@ using WorldSim.Domain.Buildings;
 namespace WorldSim.Domain;
 
 class Settlement {
+    public static int IdCounter = 0;
     public int Id { get; private set; }
     public string Name { get; set; }
     public int Population { get; private set; } = 0;
@@ -112,6 +113,16 @@ class Settlement {
             }
         }
         while (true);
+    }
+    public static Settlement CreateSettlement(string SettlementName = "") {
+
+        if (SettlementName == "") {
+            SettlementName = Nation.GetRandomName();// To do: create a random settlement name
+        }
+
+        IdCounter++;
+        int id = IdCounter;
+        return new Settlement(id, SettlementName); 
     }
 
     public void SetDemand() {

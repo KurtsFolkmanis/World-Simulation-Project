@@ -15,9 +15,9 @@ namespace WorldSim.Domain;
 
 class World {
     public Random Random = new Random();
-    public List<Nation> Nations { get; set; } = new List<Nation>();
-    public List<Settlement> Settlements { get; private set; } = new List<Settlement>();
-    public List<Trader> Traders { get; private set; } = new List<Trader>();
+    public List<Nation> Nations { get; set; } = [];
+    public List<Settlement> Settlements { get; private set; } = [];
+    public List<Trader> Traders { get; private set; } = [];
 
     public void WorldStart() {
         Nations.Add(new Nation(0));
@@ -62,4 +62,21 @@ class World {
             trader.TurnAction();
         }
     }
+
+    public Settlement GetSettlement(int id) {
+        id--;
+        if (id < 0 || id >= Settlements.Count) throw new ArgumentOutOfRangeException("Invalid settlement ID");
+        return Settlements[id];
+    }
+
+    public Nation GetNation(int id) {
+        id--;
+        if (id < 0 || id >= Nations.Count) throw new ArgumentOutOfRangeException("Invalid nation ID");
+        return Nations[id];
+    }
+
+    public void ChangeSettlementNation(Settlement settlement, Nation nation) {
+        settlement.Nation = nation;
+    }
+
 }

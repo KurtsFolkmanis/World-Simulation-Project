@@ -69,10 +69,11 @@ class Screen() {
     }
 
     public static World WorldCreation() {
-        Console.Clear();
         var world = new World();
 
         while (true) {
+            Console.Clear();
+
             NationLookUp(world);
             Console.WriteLine();
             SettlementLookUp(world);
@@ -88,12 +89,15 @@ class Screen() {
 
             switch (choice) {
                 case 1:
-                    world.Nations.Add(CreateNation(world));
+                    Console.Clear();
+                    world.Nations.Add(Nation.CreateNation("test"));
                     continue;
                 case 2:
-                    world.Settlements.Add(CreateSettlement(world));
+                    Console.Clear();
+                    world.Settlements.Add(Settlement.CreateSettlement());
                     continue;
                 case 3:
+                    Console.Clear();
                     ChangeSettlementNation(world);
                     continue;
                 case 4:
@@ -116,11 +120,8 @@ class Screen() {
     public static void SettlementLookUp(World world) {
         Console.WriteLine($"Settlement List:");
         foreach (var settlement in world.Settlements) {
-            if (settlement.Nation != null) {
-                Console.WriteLine($"[Id:{settlement.Id}] [Nation:{settlement.Nation.Name}], [Name:{settlement.Name}]");
-            } else {
-                Console.WriteLine($"[Id:{settlement.Id}] [Nation:None], [Name:{settlement.Name}]");
-            }
+            string nationName = settlement.Nation != null ? settlement.Nation.Name : "None";
+            Console.WriteLine($"[Id:{settlement.Id}] [Nation:{nationName}], [Name:{settlement.Name}]");
         }
     }
 
@@ -129,74 +130,47 @@ class Screen() {
             var input = Console.ReadLine();
             if (!int.TryParse(input, out var choice)) {
                 Console.Clear();
-        Console.WriteLine("Invalid input — please enter the number of your choice.");
+                Console.WriteLine("Invalid input — please enter the number of your choice.");
             }
             return choice;
         }
     }
 
-    public static Nation CreateNation(World world) {
-        Console.Clear();
-        string defaultName = Nation.GetRandomName();
-
-        Console.Write($"Leave blank for Name: {defaultName}\n" +
-            $"Enter name: ");
-
-        string? name = Console.ReadLine();
-        if (name == string.Empty) name = defaultName;
-
-        Console.Clear();
-        int id = world.Nations.Count;
-        return new Nation(id++, name!);
-    }
-
-    public static Settlement CreateSettlement(World world) {
-        Console.Clear();
-        string defaultName = Nation.GetRandomName();// To do: create a random settlement name
-
-        Console.Write($"Leave blank for Name: {defaultName}\n" +
-            $"Enter name: ");
-        string? name = Console.ReadLine();
-        if (name == string.Empty) name = defaultName;
-
-        Console.Clear();
-        int id = world.Settlements.Count;
-        return new Settlement(id++, name!);
-    }
-
     public static void ChangeSettlementNation(World world) {
-        int settlementId, nationId;
+        Settlement settlement;
+        Nation nation;
+
         Console.Clear();
-
         do {
-            SettlementLookUp(world);
-            Console.Write("Type Settlement ID: ");
-            settlementId = GetButton();
-            Console.Clear();
-        } while (0 <= settlementId && settlementId > world.Settlements.Count);
+            try {
+                SettlementLookUp(world);
+                Console.Write("Type Settlement ID: ");
+                settlement = world.GetSettlement(GetButton());
+                break;
+            } catch (Exception ex) {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Error: {ex.Message}");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+            }
+        }while (true);
 
-        if (world.Settlements[settlementId].Nation != null) {
-            Console.WriteLine($">[Id:{world.Settlements[settlementId].Id}] " +
-                $"[Nation:{world.Settlements[settlementId].Nation.Name}], " +
-                $"[Name:{world.Settlements[settlementId].Name}]");
-        } else {
-            Console.WriteLine($">[Id:{world.Settlements[settlementId].Id}] " +
-                $"[Nation:None], " +
-                $"[Name:{world.Settlements[settlementId].Name}]");
-        }
-
-        do {
-            NationLookUp(world);
-            Console.Write("Type Nation ID: ");
-            nationId = GetButton();
-            Console.Clear();
-        } while (0 <= nationId && nationId > world.Nations.Count);
-        Console.WriteLine($">[Id:{world.Nations[nationId].Id}] [Name:{world.Nations[nationId].Name}]");
-
-
-        world.Settlements[settlementId].Nation = world.Nations[nationId];
         Console.Clear();
+        do {
+            try {
+                NationLookUp(world);
+                Console.Write("Type Nation ID: ");
+                nation = world.GetNation(GetButton());
+                break;
+            } catch (Exception ex) {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Error: {ex.Message}");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+            }
+        } while (true);
+
+        world.ChangeSettlementNation(settlement, nation);
         return;
-
     }
 }
