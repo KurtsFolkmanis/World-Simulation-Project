@@ -23,7 +23,7 @@ class Nation(int id, string? name = null) {
     public static Nation CreateNation(string nationName = "") {
 
         if (nationName == "") {
-            nationName = GetRandomName();// To do: create a random settlement name
+            nationName = GetRandomName();
         }
 
         IdCounter++;
