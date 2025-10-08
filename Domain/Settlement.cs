@@ -114,10 +114,28 @@ class Settlement {
         }
         while (true);
     }
+
+    static string GetRandomName() {
+        Random random = new Random();
+        string name;
+
+
+        string[] prefixes = { "Raven", "Oak", "Iron", "Wolf", "Stone", "Wind", "Bright", "Frost", "Black", "Silver" };
+        string[] middles = { "wood", "field", "keep", "dale", "fort", "shire", "watch", "crest", "gate", "haven" };
+        string[] suffixes = { "", "ton", "burg", "stead", "port", "hold", "ford", "mouth", "ham", "hall" };
+
+
+        name = prefixes[random.Next(prefixes.Length)];
+        name += middles[random.Next(middles.Length)];
+        name += suffixes[random.Next(suffixes.Length)];
+
+        return name;
+    }
+
     public static Settlement CreateSettlement(string SettlementName = "") {
 
         if (SettlementName == "") {
-            SettlementName = Nation.GetRandomName();// To do: create a random settlement name
+            SettlementName = GetRandomName();// To do: create a random settlement name
         }
 
         IdCounter++;

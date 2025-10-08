@@ -87,21 +87,30 @@ class Screen() {
             int? choice = GetButton();
             if (choice == null) { continue; }
 
+            string? name = "";
             switch (choice) {
                 case 1:
                     Console.Clear();
-                    world.Nations.Add(Nation.CreateNation("test"));
+                    Console.Write("Type your nation name (or skip for random): ");
+                    name = Console.ReadLine();
+                    world.AddNation(Nation.CreateNation(name!));
                     continue;
+
                 case 2:
                     Console.Clear();
-                    world.Settlements.Add(Settlement.CreateSettlement());
+                    Console.Write("Type your settlement name (or skip for random): ");
+                    name = Console.ReadLine();
+                    world.AddSettlement(Settlement.CreateSettlement(name!));
                     continue;
+
                 case 3:
                     Console.Clear();
                     ChangeSettlementNation(world);
                     continue;
+
                 case 4:
                     return world;
+
                 default:
                     Console.Clear();
                     Console.WriteLine("Choice out of range. Try again.");

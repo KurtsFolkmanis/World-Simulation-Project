@@ -5,34 +5,29 @@ class Nation(int id, string? name = null) {
     public int Id { get; private set; } = id;
     public string Name { get; private set; } = name ?? GetRandomName();
 
-    internal static string GetRandomName() {
+    static string GetRandomName() {
         Random random = new Random();
-        string randomName;
+        string name;
 
-        var prefixes = new List<string>{"Eld", "Nor", "Val", "Ther", "Kra", "Zan"};
-        var roots    = new List<string>{"dria", "gorn", "thar", "vyn", "mor", "lithe"};
-        var suffixes = new List<string>{"ia", "land", "dor", "heim", "vale", "reach"};
+        string[] prefixes = {"Eld", "Nor", "Val", "Ther", "Kra", "Zan"};
+        string[] middles = {"dria", "gorn", "thar", "vyn", "mor", "lithe"};
+        string[] suffixes = {"ia", "land", "dor", "heim", "vale", "reach"};
 
-        randomName = prefixes[random.Next(prefixes.Count)];
-        randomName += roots[random.Next(roots.Count)];
-        randomName += suffixes[random.Next(suffixes.Count)];
+        name = prefixes[random.Next(prefixes.Length)];
+        name += middles[random.Next(middles.Length)];
+        name += suffixes[random.Next(suffixes.Length)];
 
-        return randomName;
+        return name;
     }
 
     public static Nation CreateNation(string nationName = "") {
-        Console.Clear();
-        nationName = GetRandomName();
 
-        Console.Write($"Leave blank for Name: {nationName}\n" +             
-            $"Enter name: ");
+        if (nationName == "") {
+            nationName = GetRandomName();// To do: create a random settlement name
+        }
 
-        string? name = Console.ReadLine();
-        if (name == string.Empty) name = nationName;
-
-        Console.Clear();
         IdCounter++;
         int id = IdCounter;
-        return new Nation(id++, name!);
+        return new Nation(id, nationName);
     }
 }

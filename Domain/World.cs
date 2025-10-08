@@ -69,10 +69,18 @@ class World {
         return Settlements[id];
     }
 
+    public void AddSettlement(Settlement settlement) {
+        Settlements.Add(settlement);
+    }
+
     public Nation GetNation(int id) {
         id--;
         if (id < 0 || id >= Nations.Count) throw new ArgumentOutOfRangeException("Invalid nation ID");
         return Nations[id];
+    }
+
+    public void AddNation(Nation nation) {
+        Nations.Add(nation);
     }
 
     public void ChangeSettlementNation(Settlement settlement, Nation nation) {
