@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace WorldSim.Domain.Buildings;
 
 class House : Building {
-    public House(Action<SettlementEvent> sendSettlementEvent) : base(sendSettlementEvent) {
+    public House(Action<SettlementEvent> sendSettlementEvent) : base() {
         SendSettlementEvent(new ChangePopulation(6));
     }
 

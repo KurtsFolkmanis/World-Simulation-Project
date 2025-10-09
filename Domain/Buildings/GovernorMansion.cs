@@ -4,7 +4,7 @@ using WorldSim.Domain;
 namespace WorldSim.Domain.Buildings;
 
 class GovernorMansion : Building {
-    public GovernorMansion(Action<SettlementEvent> sendSettlementEvent) : base(sendSettlementEvent) {
+    public GovernorMansion(Action<SettlementEvent> sendSettlementEvent) : base() {
         SendSettlementEvent(new ChangePopulation(4));
     }
 

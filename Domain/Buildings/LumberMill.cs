@@ -1,6 +1,6 @@
 ﻿namespace WorldSim.Domain.Buildings;
 class LumberMill : Building {
-    public LumberMill(Action<SettlementEvent> sendSettlementEvent) : base(sendSettlementEvent) {
+    public LumberMill(Action<SettlementEvent> sendSettlementEvent) : base() {
     }
 
     public override void Action() {

@@ -17,9 +17,10 @@ class SaveLoadManager {
     public World? Load() {
         try {
             string jsonFromFile = File.ReadAllText(fileName);
-            return JsonSerializer.Deserialize<World>(jsonFromFile)!;
+            return JsonSerializer.Deserialize<World>(jsonFromFile);
         } catch (Exception ex) {
             Console.WriteLine($"Failed to load world: {ex.Message}");
+            Console.ReadLine();
             return null;
         }
 

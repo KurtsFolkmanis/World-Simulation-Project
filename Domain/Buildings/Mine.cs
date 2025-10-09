@@ -2,7 +2,7 @@
 
 namespace WorldSim.Domain.Buildings;
 class Mine : Building {
-    public Mine(Action<SettlementEvent> sendSettlementEvent) : base(sendSettlementEvent) {
+    public Mine(Action<SettlementEvent> sendSettlementEvent) : base() {
     }
 
     public override void Action() {

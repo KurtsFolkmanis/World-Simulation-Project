@@ -6,14 +6,25 @@ using System.Threading.Tasks;
 
 namespace WorldSim.Domain.Buildings;
 
-public abstract class Building(Action<SettlementEvent> sendSettlementEvent) {
+public abstract class Building {
+    private readonly List<SettlementEvent> _actionQueue = [];
     public string Name {
         get {
             return GetType().Name.ToString();
         }
+    }         
+
+    public List<SettlementEvent> TurnActions() {
+        Action();
+        var events = new List<SettlementEvent>(_actionQueue);
+        _actionQueue.Clear();
+        return events;
     }
 
-    protected Action<SettlementEvent> SendSettlementEvent { get; set; } = sendSettlementEvent;
+    protected void SendSettlementEvent(SettlementEvent settlementEvent) {
+        _actionQueue.Add(settlementEvent);
+    }
+
     public abstract void Action();
 
 }

@@ -16,7 +16,7 @@ namespace WorldSim.Domain;
 class World {
     public Random Random = new Random();
     public List<Nation> Nations { get; set; } = [];
-    public List<Settlement> Settlements { get; private set; } = [];
+    public List<Settlement> Settlements { get; set; } = [];
     public List<Trader> Traders { get; private set; } = [];
 
     public void WorldStart() {

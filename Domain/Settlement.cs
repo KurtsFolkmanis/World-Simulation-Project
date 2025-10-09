@@ -8,8 +8,8 @@ namespace WorldSim.Domain;
 
 class Settlement {
     public static int IdCounter = 0;
-    public int Id { get; private set; }
-    public string Name { get; set; }
+    public int Id { get; set; }
+    public string Name { get; private set; }
     public int Population { get; private set; } = 0;
     public int MaxPopulation { get; private set; } = 0;
     public Nation? Nation { get; set; }
@@ -44,7 +44,9 @@ class Settlement {
 
         // Get materials from buildings
         foreach (var building in Buildings) {
-            building.Action();
+            foreach (var settlementEvent in building.TurnActions()) {
+                ProcessEvent(settlementEvent);
+            }
         }
 
         // Choose to create a building
