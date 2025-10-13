@@ -6,6 +6,6 @@
 }
 
 public enum MaterialType {
-    Wood, Food, Iron, Weapon, Gold,
+    Wood, Food, Iron, Weapon,
 }
 

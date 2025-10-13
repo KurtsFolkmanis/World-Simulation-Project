@@ -9,6 +9,6 @@ class GovernorMansion : Building {
     }
 
     public override void Action() {
-        SendSettlementEvent(new ChangeResources(MaterialType.Gold, 4));
+        SendSettlementEvent(new ChangeGold(4));
     }
 }

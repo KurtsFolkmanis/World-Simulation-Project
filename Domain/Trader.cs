@@ -3,13 +3,14 @@
 class Trader {
     private List<Settlement> settlements;
     private Random random = new Random();
-    private Material gold { get; set; } = new Material(MaterialType.Gold);
+    private const int MAX_Inventory = 30;
+    public int Gold { get; set; } = 0;
     private Settlement currentSettlement { get; set; }
 
     public Trader(int id, List<Settlement> settlement, Settlement location, int goldAmount) {
         this.settlements = settlement;
         this.currentSettlement = location;
-        gold.Amount = goldAmount;
+        Gold = goldAmount;
     }
 
     public void TurnAction() {
@@ -18,29 +19,34 @@ class Trader {
             nextSettlement = settlements[random.Next(settlements.Count)];
         } while (currentSettlement.Id == nextSettlement.Id);
 
-        List<Material> stock = new();
-        foreach (var materials in nextSettlement.Materials) {
-            if (currentSettlement.Materials[materials.Key].Price > materials.Value.Price) {
-                stock.Add(currentSettlement.Materials[materials.Key]);
-            }
-        }
+        List<Material> materialsToBuy = GetAvailableMaterialsForSettlemnt(nextSettlement);
 
-        if (stock == null) {
-            BuyMaterial(stock);
-            Console.WriteLine($"{currentSettlement.Name} ==> {nextSettlement.Name} Gold: {gold.Amount}");
+        if (materialsToBuy.Count != 0) {
+            Material boughtMaterial = BuyMaterial(materialsToBuy, nextSettlement);
+            if (boughtMaterial == null) return;
+            SellMaterial(boughtMaterial, nextSettlement);
+            boughtMaterial = null;
         }
-
-        currentSettlement = nextSettlement;
     }
 
-    private Material BuyMaterial(List<Material> Stock) {
-        Material material = null;
-        material = Stock[random.Next(Stock.Count)];
+    private Material BuyMaterial(List<Material> stock, Settlement nextSettelment) {
+        Material boughtMaterial = stock[random.Next(stock.Count)];
+        if (boughtMaterial.Amount == 0) return null;
+        boughtMaterial.Amount = currentSettlement.buyMaterial(nextSettelment, boughtMaterial, Gold, MAX_Inventory);
+        return boughtMaterial;
+    }
 
-        Console.WriteLine($"Price: {material.Price} / {gold.Amount}");
-        Console.ReadKey();
-        int amount = material.Price / gold.Amount;
+    private void SellMaterial(Material boughtMaterial, Settlement nextSettlement) {
+        Gold += nextSettlement.sellMaterial(boughtMaterial);
+    }
 
-        return new Material(MaterialType.Weapon);
+    private List<Material> GetAvailableMaterialsForSettlemnt(Settlement nextSettlement) {
+        List<Material> materials = new List<Material>();
+        foreach (var material in nextSettlement.Materials) {
+            if (currentSettlement.Materials[material.Key].Price < material.Value.Price) {
+                materials.Add(currentSettlement.Materials[material.Key]);
+            }
+        }
+        return materials;
     }
 }

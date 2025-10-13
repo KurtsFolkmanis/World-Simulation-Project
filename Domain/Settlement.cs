@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using WorldSim.Domain;
 using WorldSim.Domain.Buildings;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WorldSim.Domain;
 
@@ -12,20 +13,13 @@ class Settlement {
     public string Name { get; private set; }
     public int Population { get; private set; } = 0;
     public int MaxPopulation { get; private set; } = 0;
+    public int Gold { get; set; } = 1;
     public Nation? Nation { get; set; }
     public Dictionary<MaterialType, Material> Materials { get; private set; } = new Dictionary<MaterialType, Material>() {
         {MaterialType.Wood, new Material(MaterialType.Wood, 12, 4)},
-        {MaterialType.Food, new Material(MaterialType.Food, 1, 2)},
+        {MaterialType.Food, new Material(MaterialType.Food, 1, 4)},
         {MaterialType.Iron, new Material(MaterialType.Iron, 6, 6)},
         {MaterialType.Weapon, new Material(MaterialType.Weapon, 0, 20)},
-        {MaterialType.Gold, new Material(MaterialType.Gold, 0, 1)}
-    };
-    public Dictionary<MaterialType, Material> MaterialsInDemand { get; private set; } = new Dictionary<MaterialType, Material>() {
-        {MaterialType.Wood, new Material(MaterialType.Wood, 0, 4)},
-        {MaterialType.Food, new Material(MaterialType.Food, 0, 2)},
-        {MaterialType.Iron, new Material(MaterialType.Iron, 0, 6)},
-        {MaterialType.Weapon, new Material(MaterialType.Weapon, 0, 20)},
-        {MaterialType.Gold, new Material(MaterialType.Gold, 0, 1)}
     };
     public List<Building> Buildings { get; private set; } = new List<Building>();
 
@@ -64,6 +58,9 @@ class Settlement {
             case ChangePopulation changePopulation:
                 MaxPopulation += changePopulation.Amount;
                 break;
+            case ChangeGold changeGold:
+                Gold += changeGold.Amount;
+                break;
             default:
                 break;
         }
@@ -94,7 +91,6 @@ class Settlement {
                 buildingBlueprint = null;
                 break;
         }
-
     }
 
     public BuildingBlueprint PickBlueprint() {
@@ -121,11 +117,9 @@ class Settlement {
         Random random = new Random();
         string name;
 
-
         string[] prefixes = { "Raven", "Oak", "Iron", "Wolf", "Stone", "Wind", "Bright", "Frost", "Black", "Silver" };
         string[] middles = { "wood", "field", "keep", "dale", "fort", "shire", "watch", "crest", "gate", "haven" };
         string[] suffixes = { "", "ton", "burg", "stead", "port", "hold", "ford", "mouth", "ham", "hall" };
-
 
         name = prefixes[random.Next(prefixes.Length)];
         name += middles[random.Next(middles.Length)];
@@ -145,25 +139,55 @@ class Settlement {
         return new Settlement(id, SettlementName); 
     }
 
-    public void SetDemand() {
-        if (buildingBlueprint == null) {
-            foreach (var material in MaterialsInDemand) {
-                material.Value.Amount = material.Value.BasePrice;
-            }
-            return;
+    public List<Material> GetDemand() {
+        List<Material> demand = [];
+        if(buildingBlueprint == null) {
+            return demand;
         }
-        return;
+
+        foreach (var material in buildingBlueprint.Value.GetMaterials()) {
+            demand.Add(material);
+        }
+
+        return demand;
     }
 
     public void SetPrice() {
-        SetDemand();
+        List<Material> MaterialsInDemand = GetDemand();
+        Random random = new Random();
 
         foreach (var material in Materials) {
-            if (MaterialsInDemand[material.Key].Amount != 0) {
-                material.Value.Price = material.Value.BasePrice - 4;
-            }
-            material.Value.Price = material.Value.BasePrice;
+            material.Value.Price = material.Value.BasePrice + random.Next(-1,1);
         }
+        if (MaterialsInDemand.Count == 0) return;
+
+        foreach (var material in MaterialsInDemand) {
+            Materials[material.Type].Price += 3;
+        }
+    }
+
+    public int buyMaterial(Settlement nextSettlement ,Material material, int gold, int inventorySize) {
+        int nextSettlementGold = nextSettlement.Gold;
+        if (nextSettlementGold < material.Price || gold < material.Price) return 0;
+        
+        int traderAffordableAmount = gold / material.Price;
+        int settlementAffordableAmount = nextSettlementGold / material.Price;
+
+        int affordableAmount = Math.Min(traderAffordableAmount, settlementAffordableAmount);
+        affordableAmount = Math.Min(affordableAmount, material.Amount);
+        affordableAmount = Math.Min(affordableAmount, inventorySize);
+
+        Console.WriteLine($"Trader can afford {traderAffordableAmount} of {material.Type}, settlement can afford {settlementAffordableAmount}, settlemnet Stock {material.Amount}, actual amount: {affordableAmount}");
+
+        gold += affordableAmount * material.Price;
+        material.Amount -= affordableAmount;
+        return affordableAmount;
+
+    }
+    internal int sellMaterial(Material material) {
+        Materials[material.Type].Amount += material.Amount;
+        Gold -= material.Amount * material.Price; 
+        return Materials[material.Type].Price * material.Amount;
     }
 
     public override string ToString() {

@@ -45,11 +45,12 @@ class World {
             worldPop += settlement.Population;
         }
 
-        int maxTrader = worldPop / 4;
+        int maxTrader = 4;
         if (maxTrader > Traders.Count) {
             do {
                 Settlement settlement = Settlements[Random.Next(Settlements.Count)];
-                Traders.Add(new Trader(Traders.Count + 1, Settlements, settlement, 10));
+                int goldAmount = 20;
+                Traders.Add(new Trader(Traders.Count + 1, Settlements, settlement, goldAmount));
             }
             while (maxTrader > Traders.Count);
         }
@@ -61,6 +62,8 @@ class World {
         foreach (var trader in Traders) {
             trader.TurnAction();
         }
+        //Console.ReadLine();
+        Console.Clear();
     }
 
     public Settlement GetSettlement(int id) {
